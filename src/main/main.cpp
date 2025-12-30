@@ -75,11 +75,14 @@ ultramodern::gfx_callbacks_t::gfx_data_t create_gfx() {
     SDL_SetHint(SDL_HINT_JOYSTICK_HIDAPI_PS5_RUMBLE, "1");
     SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
+
+#if defined(_WIN32)
     // Prevent Windows.Gaming.Input (WGI) from spamming "Access is denied" messages in the
     // Visual Studio debug output window on some systems.
     if (SDL_GetHint(SDL_HINT_JOYSTICK_WGI) == nullptr) {
         SDL_SetHint(SDL_HINT_JOYSTICK_WGI, "0");
     }
+#endif
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) > 0) {
         exit_error("Failed to initialize SDL2: %s\n", SDL_GetError());
