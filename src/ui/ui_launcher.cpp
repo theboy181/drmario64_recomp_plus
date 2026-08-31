@@ -80,7 +80,6 @@ public:
         );
         recompui::register_event(listener, "start_game",
             [](const std::string& param, Rml::Event& event) {
-                recomp::scan_controllers();
                 recomp::refresh_controller_options();
                 const int detected = (int)recomp::get_controller_options().size();
 

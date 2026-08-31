@@ -68,3 +68,4 @@ RSPRecomp
 .idea
 build-*
 cmake-build-*
+/dist/

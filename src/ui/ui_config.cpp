@@ -40,13 +40,15 @@ int recompui::config_tab_to_index(recompui::ConfigTab tab) {
     switch (tab) {
     case recompui::ConfigTab::General:
         return 0;
-    case recompui::ConfigTab::Graphics:
-        return 1;
-    case recompui::ConfigTab::Debug:
-        return 2;
-    // Tabs that are disabled/removed in this project.
     case recompui::ConfigTab::Controls:
+        return 1;
+    case recompui::ConfigTab::Graphics:
+        return 2;
     case recompui::ConfigTab::Sound:
+        return 3;
+    case recompui::ConfigTab::Debug:
+        return 4;
+    // Mods are not exposed by this project.
     case recompui::ConfigTab::Mods:
         return -1;
     default:
@@ -545,49 +547,6 @@ class ConfigTabsetListener : public Rml::EventListener {
 class ConfigMenu : public recompui::MenuController {
 private:
     ConfigTabsetListener config_tabset_listener;
-
-    static void remove_tab_and_panel(Rml::ElementDocument* doc, const char* tab_id) {
-        if (doc == nullptr) {
-            return;
-        }
-
-        Rml::Element* tab = doc->GetElementById(tab_id);
-        if (tab == nullptr) {
-            return;
-        }
-
-        Rml::Element* parent = tab->GetParentNode();
-        if (parent == nullptr) {
-            return;
-        }
-
-        int tab_index = -1;
-        const int child_count = parent->GetNumChildren();
-        for (int i = 0; i < child_count; i++) {
-            if (parent->GetChild(i) == tab) {
-                tab_index = i;
-                break;
-            }
-        }
-
-        if (tab_index < 0) {
-            return;
-        }
-
-        // Panels live immediately after their tab in the tabset's children list.
-        Rml::Element* panel = nullptr;
-        if (tab_index + 1 < parent->GetNumChildren()) {
-            Rml::Element* next = parent->GetChild(tab_index + 1);
-            if (next != nullptr && next->GetTagName() == "panel") {
-                panel = next;
-            }
-        }
-
-        parent->RemoveChild(tab);
-        if (panel != nullptr) {
-            parent->RemoveChild(panel);
-        }
-    }
 public:
     ConfigMenu() {
 
@@ -597,14 +556,6 @@ public:
     }
     void load_document() override {
 		config_context = recompui::create_context(zelda64::get_asset_path("config_menu.rml"));
-
-        // This project doesn't expose Controls/Sound/Mods tabs; remove them from the tabset to avoid confusion and
-        // to make sure they don't appear even if assets are stale.
-        if (Rml::ElementDocument* doc = config_context.get_document()) {
-            remove_tab_and_panel(doc, "tab_controls");
-            remove_tab_and_panel(doc, "tab_mods");
-        }
-
         recompui::update_mod_list(false);
         recompui::get_config_tabset()->AddEventListener(Rml::EventId::Tabchange, &config_tabset_listener);
     }

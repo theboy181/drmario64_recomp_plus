@@ -1,0 +1,66 @@
+#!/usr/bin/python3
+"""Run Apple's linker, then preserve requested Mach-O maximum protections."""
+
+import subprocess
+import sys
+from itertools import takewhile
+
+from macholib import MachO, ptypes
+
+
+def parse_rwx(text):
+    return ("r" in text and 1) | ("w" in text and 2) | ("x" in text and 4)
+
+
+def apply_maxprots(path, maxprots):
+    mach = MachO.MachO(path)
+
+    for header in mach.headers:
+        offset = header.offset + ptypes.sizeof(header.mach_header)
+
+        for load_command, command, _data in header.commands:
+            if not hasattr(command, "segname"):
+                offset += load_command.cmdsize
+                continue
+
+            if hasattr(command.segname, "to_str"):
+                segment = command.segname.to_str().decode("utf-8").strip("\0")
+            else:
+                segment = command.segname.decode("utf-8").strip("\0")
+
+            if segment in maxprots and command.maxprot != maxprots[segment]:
+                fields = list(
+                    takewhile(
+                        lambda field: field[0] != "maxprot",
+                        load_command._fields_ + command._fields_,
+                    )
+                )
+                field_offset = offset + sum(ptypes.sizeof(field_type) for _, field_type in fields)
+
+                with open(path, "r+b") as output:
+                    output.seek(field_offset)
+                    output.write(bytes([maxprots[segment]]))
+
+            offset += load_command.cmdsize
+
+
+try:
+    subprocess.check_call(["/usr/bin/ld", *sys.argv[1:]])
+except subprocess.CalledProcessError as error:
+    sys.exit(error.returncode)
+
+output_file = "a.out"
+segment_protections = {"__TEXT": parse_rwx("rwx")}
+
+index = 1
+while index < len(sys.argv):
+    if sys.argv[index] == "-o" and index + 1 < len(sys.argv):
+        output_file = sys.argv[index + 1]
+        index += 2
+    elif sys.argv[index] == "-segprot" and index + 3 < len(sys.argv):
+        segment_protections[sys.argv[index + 1]] = parse_rwx(sys.argv[index + 2])
+        index += 4
+    else:
+        index += 1
+
+apply_maxprots(output_file, segment_protections)

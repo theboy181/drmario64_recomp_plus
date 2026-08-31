@@ -24,6 +24,7 @@
 		}
 	</style>
 	<link type="text/template" href="config_menu/general.rml" />
+	<link type="text/template" href="config_menu/controls.rml" />
 	<link type="text/template" href="config_menu/graphics.rml" />
 	<link type="text/template" href="config_menu/sound.rml" />
 	<link type="text/template" href="config_menu/debug.rml" />
@@ -40,6 +41,13 @@
 						</tab>
 						<panel class="config" data-model="general_model">
 							<template src="config-menu__general" />
+						</panel>
+						<tab class="tab" id="tab_controls">
+							<div>Controls</div>
+							<div class="tab__indicator"></div>
+						</tab>
+						<panel class="config" data-model="controls_model">
+							<template src="config-menu__controls" />
 						</panel>
 						<tab class="tab" id="tab_graphics">
 							<div>Graphics</div>

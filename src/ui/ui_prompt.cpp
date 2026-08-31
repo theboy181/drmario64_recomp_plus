@@ -5,6 +5,7 @@
 #include <cstdint>
 
 #include "recomp_ui.h"
+#include "zelda_support.h"
 
 #include "elements/ui_element.h"
 #include "elements/ui_label.h"
@@ -152,7 +153,7 @@ static bool ensure_prompt_icon_queued() {
 
     std::vector<char> bytes;
     // Use the 256.ico file as the source, extracting the embedded PNG image.
-    const std::filesystem::path icon_ico_path = std::filesystem::path("icons") / "256.ico";
+    const std::filesystem::path icon_ico_path = zelda64::get_program_path() / "icons" / "256.ico";
     if (!try_read_file_bytes(icon_ico_path, bytes)) {
         available = false;
         return available;

@@ -527,20 +527,6 @@ void release_preload(PreloadContext& context) {
     context = {};
 }
 
-#else
-
-struct PreloadContext {
-
-};
-
-// TODO implement on other platforms
-bool preload_executable(PreloadContext& context) {
-    return false;
-}
-
-void release_preload(PreloadContext& context) {
-}
-
 #endif
 
 void enable_texture_pack(recomp::mods::ModContext& context, const recomp::mods::ModHandle& mod) {
@@ -566,6 +552,7 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+#ifdef _WIN32
     // Map this executable into memory and lock it, which should keep it in physical memory. This ensures
     // that there are no stutters from the OS having to load new pages of the executable whenever a new code page is run.
     PreloadContext preload_context;
@@ -574,6 +561,7 @@ int main(int argc, char** argv) {
     if (!preloaded) {
         fprintf(stderr, "Failed to preload executable!\n");
     }
+#endif
 
 #ifdef _WIN32
     // Set up console output to accept UTF-8 on windows
@@ -716,9 +704,11 @@ int main(int argc, char** argv) {
         threads_callbacks
     );
 
+#ifdef _WIN32
     if (preloaded) {
         release_preload(preload_context);
     }
+#endif
 
     return EXIT_SUCCESS;
 }

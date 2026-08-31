@@ -1,17 +1,33 @@
 <template name="config-menu__controls">
     <head>
+        <style>
+            .drmario-controls-split { width: 100%; min-width: 0; overflow: hidden; }
+            .drmario-controls-mappings { flex: 0 0 1920dp; width: 1920dp; min-width: 1920dp; max-width: 1920dp; overflow: hidden; }
+            .drmario-controls-mappings .input-config__mappings-scroll { overflow-x: hidden; overflow-y: scroll; }
+            .drmario-controls-mappings .control-option { min-width: 0; box-sizing: border-box; justify-content: flex-start; }
+            .drmario-controls-mappings .control-option__label { flex: 0 0 230dp; width: 230dp; font-size: 20dp; }
+            .drmario-controls-mappings .control-option__bindings { flex: 0 0 420dp; width: 420dp; min-width: 420dp; box-sizing: border-box; }
+            .drmario-controls-mappings .control-option__binding { flex: 0 0 188dp; width: 188dp; min-width: 188dp; max-width: 188dp; box-sizing: border-box; }
+            .drmario-controls-mappings .control-option .icon-button { flex: 0 0 53.8dp; margin-left: 4dp; }
+            .drmario-controls-guide { flex: 1 1 auto; width: auto; min-width: 0; height: 100%; padding: 14dp; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+            .drmario-controls-guide__title { width: 100%; min-width: 0; font-size: 24dp; color: #ffffff; text-align: center; margin-bottom: 4dp; white-space: normal; }
+            .drmario-controls-guide__subtitle { width: 100%; min-width: 0; font-size: 14dp; color: #b9c9dc; text-align: center; margin-bottom: 18dp; white-space: normal; }
+            .drmario-capsule { width: 60%; max-width: 184dp; height: 72dp; margin-left: auto; margin-right: auto; margin-bottom: 22dp; display: flex; transform: rotate(-12deg); }
+            .drmario-capsule__half { width: 92dp; height: 72dp; border-width: 4dp; border-color: #ffffff; box-sizing: border-box; }
+            .drmario-capsule__half--red { background-color: #ed394f; border-top-left-radius: 38dp; border-bottom-left-radius: 38dp; border-right-width: 2dp; }
+            .drmario-capsule__half--blue { background-color: #35a9e8; border-top-right-radius: 38dp; border-bottom-right-radius: 38dp; border-left-width: 2dp; }
+            .drmario-controls-guide__row { display: flex; width: 100%; min-width: 0; margin-bottom: 10dp; overflow: hidden; }
+            .drmario-controls-guide__action { flex: 1 1 0dp; width: 0; min-width: 0; min-height: 58dp; padding: 9dp 12dp; margin-left: 5dp; margin-right: 5dp; box-sizing: border-box; background-color: rgba(18, 39, 67, 0.88); border-width: 2dp; border-color: rgba(117, 174, 221, 0.45); border-radius: 8dp; overflow: hidden; }
+            .drmario-controls-guide__button { color: #ffd84a; font-size: 17dp; margin-bottom: 2dp; }
+            .drmario-controls-guide__description { width: 100%; min-width: 0; color: #ffffff; font-size: 14dp; white-space: normal; }
+            .drmario-controls-guide__hint { width: 100%; min-width: 0; color: #91a8bf; font-size: 12dp; text-align: center; margin-top: 8dp; white-space: normal; }
+        </style>
     </head>
     <body>
         <form class="config__form" data-attr-cur-input="cur_input_row" data-attr-cur-binding-slot="active_binding_slot">
             <div class="config__header">
                 <div class="config__header-left">
-                    <button
-                        class="toggle"
-                        id="cont_kb_toggle"
-                        data-class-toggle--checked="input_device_is_keyboard"
-                        onclick="toggle_input_device"
-                        style="nav-down: #input_row_button_0_0; nav-up: #tab_controls"
-                    >
+                    <button class="toggle" id="cont_kb_toggle" data-class-toggle--checked="input_device_is_keyboard" onclick="toggle_input_device" style="nav-down: #input_row_button_0_0; nav-up: #tab_controls">
                         <div class="toggle__border" />
                         <div class="toggle__floater" />
                         <div class="toggle__icons">
@@ -21,340 +37,60 @@
                     </button>
                 </div>
                 <div>
-                    <button
-                        class="button button--warning"
-                        style="nav-down:#input_row_button_0_0"
-                        data-event-click="reset_input_bindings_to_defaults"
-                    >
+                    <button class="button button--warning" style="nav-down:#input_row_button_0_0" data-event-click="reset_input_bindings_to_defaults">
                         <div class="button__label">Reset to defaults</div>
                     </button>
                 </div>
             </div>
             <div class="config__wrapper input-config">
-                <div class="input-config__horizontal-split">
-                    <div class="input-config__mappings" data-event-mouseout="set_input_row_focus(-1)">
+                <div class="input-config__horizontal-split drmario-controls-split">
+                    <div class="input-config__mappings drmario-controls-mappings" data-event-mouseout="set_input_row_focus(-1)">
                         <div class="input-config__mappings-scroll">
                             <div class="input-config__mappings-wrapper">
-                                <div
-                                    class="control-option"
-                                    data-attr-id="'input_row_' + i"
-                                    data-for="input_bindings, i : inputs.array"
-                                    data-event-mouseover="set_input_row_focus(i)"
-                                    data-class-control-option--active="get_input_enum_name(i)==cur_input_row"
-                                    data-if="!input_device_is_keyboard || (get_input_enum_name(i) != 'TOGGLE_MENU' && get_input_enum_name(i) != 'ACCEPT_MENU' && get_input_enum_name(i) != 'APPLY_MENU')"
-                                >
-                                    <label
-                                        class="control-option__label"
-                                    >{{get_input_name(i)}}</label>
+                                <div class="control-option" data-attr-id="'input_row_' + i" data-for="input_bindings, i : inputs.array" data-event-mouseover="set_input_row_focus(i)" data-class-control-option--active="get_input_enum_name(i)==cur_input_row" data-if="!input_device_is_keyboard || (get_input_enum_name(i) != 'TOGGLE_MENU' && get_input_enum_name(i) != 'ACCEPT_MENU' && get_input_enum_name(i) != 'APPLY_MENU')">
+                                    <label class="control-option__label">{{get_input_name(i)}}</label>
                                     <div class="control-option__bindings">
-                                        <button
-                                            data-attr-id="'input_row_button_' + i + '_' + j"
-                                            data-event-blur="set_input_row_focus(-1)"
-                                            data-event-focus="set_input_row_focus(i)"
-                                            data-for="cur_binding, j : input_bindings"
-                                            data-event-click="set_input_binding(i,j)"
-                                            class="prompt-font control-option__binding"
-                                            data-attr-bind-slot="j"
-                                            data-attr-style="i == 0 ? 'nav-up:#cont_kb_toggle' : 'nav-up:auto'"
-                                        >
+                                        <button data-attr-id="'input_row_button_' + i + '_' + j" data-event-blur="set_input_row_focus(-1)" data-event-focus="set_input_row_focus(i)" data-for="cur_binding, j : input_bindings" data-event-click="set_input_binding(i,j)" class="prompt-font control-option__binding" data-attr-bind-slot="j" data-attr-style="i == 0 ? 'nav-up:#cont_kb_toggle' : 'nav-up:auto'">
                                             <div class="control-option__binding-recording">
                                                 <div class="control-option__binding-circle" />
-                                                <div class="control-option__binding-edge">
-                                                    <svg class="control-option__binding-edge-svg" src="icons/RecordBorder.svg" />
-                                                </div>
+                                                <div class="control-option__binding-edge"><svg class="control-option__binding-edge-svg" src="icons/RecordBorder.svg" /></div>
                                             </div>
                                             <div class="control-option__binding-icon">{{cur_binding}}</div>
                                         </button>
                                     </div>
-                                    <button
-                                        data-if="get_input_enum_name(i) != 'TOGGLE_MENU' && get_input_enum_name(i) != 'ACCEPT_MENU'"
-                                        data-event-blur="set_input_row_focus(-1)"
-                                        data-event-focus="set_input_row_focus(i)"
-                                        data-event-click="clear_input_bindings(i)"
-                                        class="icon-button icon-button--error"
-                                        data-attr-style="i == 0 ? 'nav-up:#cont_kb_toggle' : 'nav-up:auto'"
-                                    >
+                                    <button data-if="get_input_enum_name(i) != 'TOGGLE_MENU' && get_input_enum_name(i) != 'ACCEPT_MENU'" data-event-blur="set_input_row_focus(-1)" data-event-focus="set_input_row_focus(i)" data-event-click="clear_input_bindings(i)" class="icon-button icon-button--error" data-attr-style="i == 0 ? 'nav-up:#cont_kb_toggle' : 'nav-up:auto'">
                                         <svg src="icons/Trash.svg" />
                                     </button>
-                                    <button
-                                        data-if="get_input_enum_name(i) == 'TOGGLE_MENU' || get_input_enum_name(i) == 'ACCEPT_MENU'"
-                                        data-event-blur="set_input_row_focus(-1)"
-                                        data-event-focus="set_input_row_focus(i)"
-                                        data-event-click="reset_single_input_binding_to_default(i)"
-                                        class="icon-button icon-button--error"
-                                        data-attr-style="i == 0 ? 'nav-up:#cont_kb_toggle' : 'nav-up:auto'"
-                                    >
+                                    <button data-if="get_input_enum_name(i) == 'TOGGLE_MENU' || get_input_enum_name(i) == 'ACCEPT_MENU'" data-event-blur="set_input_row_focus(-1)" data-event-focus="set_input_row_focus(i)" data-event-click="reset_single_input_binding_to_default(i)" class="icon-button icon-button--error" data-attr-style="i == 0 ? 'nav-up:#cont_kb_toggle' : 'nav-up:auto'">
                                         <svg src="icons/Reset.svg" />
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="input-config__visual-wrapper">
-                        <div class="input-config__visual-aspect">
-                            <div class="input-config__visual">
-                                <!-- stick only -->
-                                <div class="input-config__visual-stick-wrapper">
-                                    <div
-                                        class="input-viz input-config__visual-stick"
-                                        visual-input="X_AXIS_NEG X_AXIS_POS Y_AXIS_NEG Y_AXIS_POS"
-                                    >
-                                        <div class="input-viz__stick-split input-viz__stick-split--vertical">
-                                            <div class="input-viz input-viz__mappings" visual-input="Y_AXIS_POS">
-                                                <svg class="input-viz__dpad-arrow input-viz__dpad-arrow--up" src="icons/VizMap/DPadArrow.svg" />
-                                                <div
-                                                    class="input-config__visual-mapping"
-                                                    data-for="cur_binding, i : inputs.Y_AXIS_POS"
-                                                >
-                                                    <div>{{cur_binding}}</div>
-                                                </div>
-                                            </div>
-                                            <div class="input-viz__dpad-divider" />
-                                            <div class="input-viz input-viz__mappings" visual-input="Y_AXIS_NEG">
-                                                <svg class="input-viz__dpad-arrow input-viz__dpad-arrow--down" src="icons/VizMap/DPadArrow.svg" />
-                                                <div
-                                                    class="input-config__visual-mapping"
-                                                    data-for="cur_binding, i : inputs.Y_AXIS_NEG"
-                                                >
-                                                    <div>{{cur_binding}}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="input-viz__stick-split input-viz__stick-split--horizontal">
-                                            <div class="input-viz input-viz__mappings" visual-input="X_AXIS_NEG">
-                                                <svg class="input-viz__dpad-arrow input-viz__dpad-arrow--left" src="icons/VizMap/DPadArrow.svg" />
-                                                <div
-                                                    class="input-config__visual-mapping"
-                                                    data-for="cur_binding, i : inputs.X_AXIS_NEG"
-                                                >
-                                                    <div>{{cur_binding}}</div>
-                                                </div>
-                                            </div>
-                                            <div class="input-viz__dpad-divider" />
-                                            <div class="input-viz input-viz__mappings" visual-input="X_AXIS_POS">
-                                                <svg class="input-viz__dpad-arrow input-viz__dpad-arrow--right" src="icons/VizMap/DPadArrow.svg" />
-                                                <div
-                                                    class="input-config__visual-mapping"
-                                                    data-for="cur_binding, i : inputs.X_AXIS_POS"
-                                                >
-                                                    <div>{{cur_binding}}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- top half -->
-                                <div class="input-config__visual-half">
-                                    <div class="input-config__visual-quarter-left">
-                                        <div
-                                            class="input-viz input-viz__dpad"
-                                            visual-input="DPAD_UP DPAD_DOWN DPAD_LEFT DPAD_RIGHT"
-                                        >
-                                            <svg src="icons/VizMap/DPad.svg" />
-                                            <div class="input-viz__dpad-split input-viz__dpad-split--vertical">
-                                                <div class="input-viz input-viz__mappings" visual-input="DPAD_UP">
-                                                    <svg class="input-viz__dpad-arrow input-viz__dpad-arrow--up" src="icons/VizMap/DPadArrow.svg" />
-                                                    <div
-                                                        class="input-config__visual-mapping"
-                                                        data-for="cur_binding, i : inputs.DPAD_UP"
-                                                    >
-                                                        <div>{{cur_binding}}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="input-viz__dpad-divider" />
-                                                <div class="input-viz input-viz__mappings" visual-input="DPAD_DOWN">
-                                                    <svg class="input-viz__dpad-arrow input-viz__dpad-arrow--down" src="icons/VizMap/DPadArrow.svg" />
-                                                    <div
-                                                        class="input-config__visual-mapping"
-                                                        data-for="cur_binding, i : inputs.DPAD_DOWN"
-                                                    >
-                                                        <div>{{cur_binding}}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="input-viz__dpad-split input-viz__dpad-split--horizontal">
-                                                <div class="input-viz input-viz__mappings" visual-input="DPAD_LEFT">
-                                                    <svg class="input-viz__dpad-arrow input-viz__dpad-arrow--left" src="icons/VizMap/DPadArrow.svg" />
-                                                    <div
-                                                        class="input-config__visual-mapping"
-                                                        data-for="cur_binding, i : inputs.DPAD_LEFT"
-                                                    >
-                                                        <div>{{cur_binding}}</div>
-                                                    </div>
-                                                </div>
-                                                <div class="input-viz__dpad-divider" />
-                                                <div class="input-viz input-viz__mappings" visual-input="DPAD_RIGHT">
-                                                    <svg class="input-viz__dpad-arrow input-viz__dpad-arrow--right" src="icons/VizMap/DPadArrow.svg" />
-                                                    <div
-                                                        class="input-config__visual-mapping"
-                                                        data-for="cur_binding, i : inputs.DPAD_RIGHT"
-                                                    >
-                                                        <div>{{cur_binding}}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="input-config__visual-quarter-right">
-                                        <div class="input-config__main-buttons">
-                                            <div
-                                                class="input-viz input-viz__button input-viz__button--sm input-viz__button--Start"
-                                                visual-input="START"
-                                            >
-                                                <svg src="icons/VizMap/ButtonSmall.svg" />
-                                                <div class="input-viz__mappings">
-                                                    <div
-                                                        class="input-config__visual-mapping"
-                                                        data-for="cur_binding, i : inputs.START"
-                                                    >
-                                                        <div>{{cur_binding}}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div
-                                                class="input-viz input-viz__button input-viz__button--lg input-viz__button--B"
-                                                visual-input="B"
-                                            >
-                                                <svg src="icons/VizMap/ButtonLarge.svg" />
-                                                <div class="input-viz__mappings">
-                                                    <div
-                                                        class="input-config__visual-mapping"
-                                                        data-for="cur_binding, i : inputs.B"
-                                                    >
-                                                        <div>{{cur_binding}}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div
-                                                class="input-viz input-viz__button input-viz__button--lg input-viz__button--A"
-                                                visual-input="A"
-                                            >
-                                                <svg src="icons/VizMap/ButtonLarge.svg" />
-                                                <div class="input-viz__mappings">
-                                                    <div
-                                                        class="input-config__visual-mapping"
-                                                        data-for="cur_binding, i : inputs.A"
-                                                    >
-                                                        <div>{{cur_binding}}</div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="input-config__c-buttons">
-                                            <div class="input-config__c-buttons-lr">
-                                                <div
-                                                    class="input-viz input-viz__button input-viz__button--md input-viz__button--C"
-                                                    visual-input="C_LEFT"
-                                                >
-                                                    <svg src="icons/VizMap/ButtonMedium.svg" />
-                                                    <div class="input-viz__mappings">
-                                                        <div
-                                                            class="input-config__visual-mapping"
-                                                            data-for="cur_binding, i : inputs.C_LEFT"
-                                                        >
-                                                            <div>{{cur_binding}}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    class="input-viz input-viz__button input-viz__button--md input-viz__button--C"
-                                                    visual-input="C_RIGHT"
-                                                >
-                                                    <svg src="icons/VizMap/ButtonMedium.svg" />
-                                                    <div class="input-viz__mappings">
-                                                        <div
-                                                            class="input-config__visual-mapping"
-                                                            data-for="cur_binding, i : inputs.C_RIGHT"
-                                                        >
-                                                            <div>{{cur_binding}}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="input-config__c-buttons-du">
-                                                <div
-                                                    class="input-viz input-viz__button input-viz__button--md input-viz__button--C"
-                                                    visual-input="C_DOWN"
-                                                >
-                                                    <svg src="icons/VizMap/ButtonMedium.svg" />
-                                                    <div class="input-viz__mappings">
-                                                        <div
-                                                            class="input-config__visual-mapping"
-                                                            data-for="cur_binding, i : inputs.C_DOWN"
-                                                        >
-                                                            <div>{{cur_binding}}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    class="input-viz input-viz__button input-viz__button--sm input-viz__button--C"
-                                                    visual-input="C_UP"
-                                                >
-                                                    <svg src="icons/VizMap/ButtonMedium.svg" />
-                                                    <div class="input-viz__mappings">
-                                                        <div
-                                                            class="input-config__visual-mapping"
-                                                            data-for="cur_binding, i : inputs.C_UP"
-                                                        >
-                                                            <div>{{cur_binding}}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- bottom half -->
-                                <div class="input-config__visual-half input-config__visual-half--bottom">
-                                    <div
-                                        class="input-viz input-viz__Z"
-                                        visual-input="Z"
-                                    >
-                                        <svg src="icons/VizMap/Target.svg" />
-                                        <div class="input-viz__mappings">
-                                            <div
-                                                class="input-config__visual-mapping"
-                                                data-for="cur_binding, i : inputs.Z"
-                                            >
-                                                <div>{{cur_binding}}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="input-viz input-viz__R"
-                                        visual-input="R"
-                                    >
-                                        <svg src="icons/VizMap/Shield.svg" />
-                                        <div class="input-viz__mappings">
-                                            <div
-                                                class="input-config__visual-mapping"
-                                                data-for="cur_binding, i : inputs.R"
-                                            >
-                                                <div>{{cur_binding}}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        class="input-viz input-viz__L"
-                                        visual-input="L"
-                                    >
-                                        <svg src="icons/VizMap/Map.svg" />
-                                        <div class="input-viz__mappings">
-                                            <div
-                                                class="input-config__visual-mapping"
-                                                data-for="cur_binding, i : inputs.L"
-                                            >
-                                                <div>{{cur_binding}}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="drmario-controls-guide">
+                        <div class="drmario-controls-guide__title">Dr. Mario Controls</div>
+                        <div class="drmario-controls-guide__subtitle">Match colors. Clear every virus.</div>
+                        <div class="drmario-capsule">
+                            <div class="drmario-capsule__half drmario-capsule__half--red" />
+                            <div class="drmario-capsule__half drmario-capsule__half--blue" />
                         </div>
+                        <div class="drmario-controls-guide__row">
+                            <div class="drmario-controls-guide__action" visual-input="X_AXIS_NEG X_AXIS_POS DPAD_LEFT DPAD_RIGHT"><div class="drmario-controls-guide__button">←  →</div><div class="drmario-controls-guide__description">Move capsule</div></div>
+                            <div class="drmario-controls-guide__action" visual-input="Y_AXIS_NEG DPAD_DOWN"><div class="drmario-controls-guide__button">↓</div><div class="drmario-controls-guide__description">Soft drop</div></div>
+                        </div>
+                        <div class="drmario-controls-guide__row">
+                            <div class="drmario-controls-guide__action" visual-input="A"><div class="drmario-controls-guide__button">A</div><div class="drmario-controls-guide__description">Rotate right</div></div>
+                            <div class="drmario-controls-guide__action" visual-input="B"><div class="drmario-controls-guide__button">B</div><div class="drmario-controls-guide__description">Rotate left</div></div>
+                        </div>
+                        <div class="drmario-controls-guide__row">
+                            <div class="drmario-controls-guide__action" visual-input="START"><div class="drmario-controls-guide__button">START</div><div class="drmario-controls-guide__description">Pause game</div></div>
+                            <div class="drmario-controls-guide__action" visual-input="C_UP C_DOWN C_LEFT C_RIGHT"><div class="drmario-controls-guide__button">C</div><div class="drmario-controls-guide__description">Toggle drop guide</div></div>
+                        </div>
+                        <div class="drmario-controls-guide__hint">Select a binding on the left, then press the new button or key.</div>
                     </div>
                 </div>
             </div>
         </form>
     </body>
 </template>
-    
